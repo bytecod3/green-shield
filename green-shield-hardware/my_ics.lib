@@ -1,0 +1,21 @@
+EESchema-LIBRARY Version 2.4
+#encoding utf-8
+#
+# Songle_relay
+#
+DEF Songle_relay R 0 40 Y Y 1 F N
+F0 "R" 400 -500 50 H V C CNN
+F1 "Songle_relay" 400 -400 50 H V C CNN
+F2 "" 0 0 50 H I C CNN
+F3 "" 0 0 50 H I C CNN
+DRAW
+S 0 0 850 -800 0 1 0 N
+X NC 1 950 -150 100 L 50 50 1 1 O
+X C 2 950 -400 100 L 50 50 1 1 O
+X NO 3 950 -650 100 L 50 50 1 1 O
+X VCC 4 -100 -150 100 R 50 50 1 1 I
+X GND 5 -100 -650 100 R 50 50 1 1 I
+ENDDRAW
+ENDDEF
+#
+#End Library
