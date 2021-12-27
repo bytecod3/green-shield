@@ -123,7 +123,6 @@ void relay_update()
         digitalWrite(RELAY2, LOW);
     }
     
-    
 }
 
 void led_control(uint8_t led_id)

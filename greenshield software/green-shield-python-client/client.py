@@ -47,7 +47,6 @@ class App:
 		self.cmd_res_entr = Entry(self.parent)
 		self.cmd_res_entr.place(x=150,y=100,height=35,width=180)
 
-
 		# make it not resizable
 
 	def widget_pack(self):
