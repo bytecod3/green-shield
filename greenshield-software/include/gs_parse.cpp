@@ -147,20 +147,188 @@ void parse_cmd()
                         relay_num = atoi((char *) &instr[3]);   // RY:n:?
                         if ((relay_num >= 0) && (relay_num < 2)){
                             // return relay state
-                            if((instr[4] == ':') && (instr[5] == '?')){  // RY:n:1/0
+                            if((instr[4] == ':') && (instr[5] == '?')){  
                                 send_relay(relay_num);
                                 break;
+                            } else if(instr[4] == ':'){ // RY:n:1/0
+                                // overide relay state
+                                if((instr[5] == '0') || (instr[5] == '1')){
+                                    ryst = atoi((char *) &instr[5]);
+                                    relay_set(relay_num, ryst);
+                                    send_ok();
+                                    break;
+                                }
+
+                                // disable mapping for a specified relay
+                                else if(instr[5] == 'N'){
+                                    if(instr[6] == 'O'){
+                                        if(instr[7] == 'N'){
+                                            relay_map[relay_num] = MAP_NONE;
+                                            send_ok();
+                                        }
+                                    }
+                                }
+
+                                // assign relay to min or max for a given output
+                                else if(instr[5] == 'H'){
+                                    if(instr[6] == 'M'){
+                                        if(instr[7] == 'N'){
+                                            relay_map[relay_num] = MAP_HUMIDMIN;
+                                            send_ok();
+                                        }
+                                        else if(instr[7] == 'X'){
+                                            relay_map[relay_num] = MAP_HUMIDMAX;
+                                            send_ok();                                        }
+                                    } else{
+                                        send_error(BADCHAR);
+                                    }
+                                }
+                                break;
+                            }
+
+                            else if(instr[5] == 'L'){
+                                if(instr[6] == 'M'){
+                                    if(instr[7] == 'X'){
+                                        relay_map[relay_num] = MAP_LIGHTMIN;
+                                        send_ok();
+                                    } else if(instr[7] == 'X'){
+                                        relay_map[relay_num] = MAP_LIGHTMAX;
+                                        send_ok();
+                                    } else{
+                                        send_error(BADCHAR);
+                                    }
+                                }
+                                break;
+                            }
+
+                            else if(instr[5] == 'M'){
+                                if(instr[6] == 'M'){
+                                    if(instr[7] == 'N'){
+                                        relay_map[relay_num] = MAP_MOISTMIN;
+                                        send_ok();
+                                    }
+                                    else if(instr[7] == 'X'){
+                                        relay_map[relay_num] = MAP_MOISTMAX;
+                                        send_ok();
+                                    } else{
+                                        send_error(BADCHAR);
+                                    }
+                                }
+                                break;
+     }
+                                else if (instr[5] == 'T') {
+                                    if (instr[6] == 'M') {
+                                        if (instr[7] == 'N') {
+                                            rymap[rynum] = MAP_TEMPMIN;
+                                            SendOK();
+                                        }
+                                        else if (instr[7] == 'X') {
+                                            rymap[rynum] = MAP_TEMPMAX;
+                                            SendOK();
+                                        }
+                                        else {
+                                            SendErr(BADCHAR);
+                                        }
+                                    }
+                                    break;
+                                }
                             }
                         }
-                        
                     }
                 }
             }
-        
-        default:
+            SendErr(BADCHAR);
             break;
-        }
-    
+
+        case 'S':
+            if (instr[1] == 'T') {
+                if (instr[2] == ':') {
+                    if ((instr[3] == 'H') && (instr[4] == 'M')) {
+                        if (instr[5] == 'X') {                      // ST:HMX
+                            if (instr[6] == ':') {
+                                maxhum = CvtInt(instr,7,slen);
+                                send_ok();
+                                break;
+                            }
+                        }
+                        else if (instr[5] == 'N') {                 // ST:HMN
+                            if (instr[6] == ':') {
+                                minhum = CvtInt(instr,7,slen);
+                                send_ok();
+                                break;
+                            }
+                        }
+                    }
+
+                    if ((instr[3] == 'L') && (instr[4] == 'M')) {
+                        if (instr[5] == 'X') {                      // ST:LMX
+                            if (instr[6] == ':') {
+                                maxlite = CvtInt(instr,7,slen);
+                                send_ok();
+                                break;
+                            }
+                        }
+                        else if (instr[5] == 'N') {                 // ST:LMN
+                            if (instr[6] == ':') {
+                                minlite = CvtInt(instr,7,slen);
+                                send_ok();
+                                break;
+                            }
+                        }
+                    }
+
+                    if ((instr[3] == 'M') && (instr[4] == 'M')) {
+                        if (instr[5] == 'X') {                      // ST:MMX
+                            if (instr[6] == ':') {
+                                maxmoist = CvtInt(instr,7,slen);
+                                send_ok();
+                                break;
+                            }
+                        }
+                        else if (instr[5] == 'N') {                 // ST:MMN
+                            if (instr[6] == ':') {
+                                minmoist = CvtInt(instr,7,slen);
+                                send_ok();
+                                break;
+                            }
+                        }
+                    }
+
+                    if ((instr[3] == 'T') && (instr[4] == 'M')) {
+                        if (instr[5] == 'X') {                      // ST:TMX
+                            if (instr[6] == ':') {
+                                maxtemp = CvtInt(instr,7,slen);
+                                send_ok();
+                                break;
+                            }
+                        }
+                        else if (instr[5] == 'N') {                 // ST:TMN
+                            if (instr[6] == ':') {
+                                mintemp = CvtInt(instr,7,slen);
+                                send_ok();
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            send_error(BADCHAR);
+            break;
+        case 'T':                                                   // TM:?
+            if (instr[1] == 'M') {
+                if (instr[2] == ':') {
+                    if (instr[3] = '?') {
+                        send_temp();
+                        break;
+                    }
+                }
+            }
+            send_error(BADCHAR);
+            break;
+        default:
+            send_error(BADCHAR);
+            break;
+    }
 
 }
 
